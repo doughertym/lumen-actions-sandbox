@@ -14,3 +14,11 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix'=>'api/v1'], function() use($router){
+    $router->get('/church/{church_id}/people', 'PeopleController@index');
+    $router->get('/church/{church_id}/people/{person_id}', 'PeopleController@show');
+
+    $router->get('/church/{church_id}/groups', 'GroupController@index');
+    $router->get('/church/{church_id}/groups/{group_id}', 'GroupController@show');
+});
