@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ../:/usr/local/gv-ccb
+      - ./local-php.ini:/usr/local/etc/php/conf.d/local-php.ini
+    working_dir: /usr/local/gv-ccb
+    ports:
+      - "8900:80"
+      - "9000"
