@@ -19,4 +19,4 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: branch      
     - name: Build the Docker image
-      run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:${{ steps.branch.outputs.branch }}
+      run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:latest
