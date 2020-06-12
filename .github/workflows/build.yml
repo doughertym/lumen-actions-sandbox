@@ -64,9 +64,10 @@ jobs:
       with:
         service_account_email: ${{ secrets.GCP_EMAIL }}
         service_account_key: ${{ secrets.GCP_KEY }}
+
       # Deploy image to Cloud Run
       - name: Deploy Staging
-        run: |-
+        run: |
           gcloud run deploy "$IMAGE_NAME" \
             --region us-central1 \
             --image "$CONTAINER_REPO"/$IMAGE_NAME:$GITHUB_SHA" \
