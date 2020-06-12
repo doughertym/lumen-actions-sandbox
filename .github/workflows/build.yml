@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
   CONTAINER_REPO: "gcr.io/lithe-breaker-191614"
-  IMAGE_TAG: $(git rev-parse --short HEAD)
+  IMAGE_TAG: "$(git rev-parse --short HEAD)"
 
 jobs:
   build:
