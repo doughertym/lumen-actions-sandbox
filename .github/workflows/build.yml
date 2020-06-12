@@ -21,7 +21,7 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
       - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s)
+        run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s) --tag gcr.io/threedev.com:api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
 
   staging:
     needs: build
@@ -35,4 +35,12 @@ jobs:
           version: '296.0.0'
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_KEY }}
-      - run: gcloud info
+      # Configure docker to use the gcloud command-line tool as a credential helper
+      - run: |
+          # Set up docker to authenticate
+          # via gcloud command-line tool.
+          gcloud auth configure-docker
+      # Push the Docker image to Google Container Registry
+      - name: Publish
+        run: |
+          docker push gcr.io/threedev.com:api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
