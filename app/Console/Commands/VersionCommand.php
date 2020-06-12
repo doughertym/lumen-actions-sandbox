@@ -11,7 +11,7 @@ class VersionCommand  extends Command
      *
      * @var string
      */
-    protected $signature = 'version';
+    protected $signature = 'version {run_number?} {ref?}';
 
     /**
      * The console command description.
@@ -37,14 +37,14 @@ class VersionCommand  extends Command
      */
     public function handle()
     {
+        $run_number = $this->argument('run_number');
+        $ref = $this->argument('ref');
+
         $hash = exec("git rev-parse --short HEAD");
         $this->info("MAJOR = 1");
         $this->info("MINOR = 0");
-        $this->info("PATCH = 1");
+        $this->info("PATCH = $run_number");
         $this->info("SHORT_HASH = $hash");
-//        $getenv = getenv();
-//        foreach ($getenv as $name => $value) {
-//            $this->info("$name = $value");
-//        }
+        $this->info("BRANCH = " . str_replace('refs/heads/', '', $ref));
     }
 }
