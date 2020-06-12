@@ -8,7 +8,7 @@ on:
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
   CONTAINER_REPO: "gcr.io/lithe-breaker-191614"
-  IMAGE_TAG: "$(git rev-parse --short HEAD)"
+#  IMAGE_TAG: "$(git rev-parse --short HEAD)"
 
 jobs:
   build:
@@ -38,6 +38,8 @@ jobs:
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
+      - name: Create Short SHA
+        run: echo ::set-env name=IMAGE_TAG::$(git rev-parse --short HEAD)
       - name: Build the Docker image
         run: |
           php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
