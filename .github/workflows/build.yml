@@ -55,12 +55,20 @@ jobs:
       - name: Publish
         run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
 
+  deploy-staging:
+    - uses: actions/checkout@v2
+      with:
+        php-version: '7.4'
+        tools: pecl
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        service_account_email: ${{ secrets.GCP_EMAIL }}
+        service_account_key: ${{ secrets.GCP_KEY }}
       # Deploy image to Cloud Run
-#      - name: Deploy Staging
-#        run: |-
-#          gcloud run deploy "$SERVICE_NAME" \
-#            --quiet \
-#            --region "$RUN_REGION" \
-#            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
-#            --platform "managed" \
-#            --allow-unauthenticated
+      - name: Deploy Staging
+        run: |-
+          gcloud run deploy "$IMAGE_NAME" \
+            --region us-central1 \
+            --image "$CONTAINER_REPO"/$IMAGE_NAME:$GITHUB_SHA" \
+            --platform "managed" \
+            --allow-unauthenticated
