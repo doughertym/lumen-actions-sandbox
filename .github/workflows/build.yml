@@ -21,7 +21,7 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
       - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s) --tag gcr.io/threedev.com:api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
+        run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s) --tag gcr.io/479457777539/lumen-actions-sandbox:$GITHUB_SHA
 
   staging:
     needs: build
@@ -43,4 +43,4 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
-          docker push gcr.io/threedev.com:api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
+          docker push gcr.io/479457777539/lumen-actions-sandbox:$GITHUB_SHA
