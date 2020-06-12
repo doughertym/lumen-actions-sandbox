@@ -5,7 +5,7 @@ on: [push, pull_request]
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
   GKE_PROJECT: "threedev.com/api-project-479457777539"
-  CONTAINER_REPO: "gcr.io/${GKE_PROJECT}"
+  CONTAINER_REPO: "gcr.io/threedev.com/api-project-479457777539"
 
 jobs:
   build:
