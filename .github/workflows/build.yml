@@ -16,6 +16,10 @@ jobs:
         with:
           php-version: '7.4'
           tools: pecl
+      - name: Environment
+        run: |
+          echo ${{ github }}
+          echo ${{ env }}
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
