@@ -21,7 +21,7 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
       - name: Build the Docker image
-      - run: docker build . --file docker/Dockerfile --tag lumen-actions-sandbox:$(date +%s) --tag gcr.io/479457777539/lumen-actions-sandbox:$GITHUB_SHA
+        run: docker build . --file docker/Dockerfile --tag lumen-actions-sandbox:$(date +%s) --tag gcr.io/479457777539/lumen-actions-sandbox:$GITHUB_SHA
       - run: docker image ls
 
   staging:
