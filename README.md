@@ -1,6 +1,6 @@
 # [GroupVitals](https://www.groupvitals.com) [CCB](https://www.churchcommunitybuilder.com/) Integration Microservice
 
-![Laravel](https://github.com/GroupVitals/GroupVitals-CCB/workflows/Laravel/badge.svg)
+![Sandbox](https://github.com/doughertym/lumen-actions-sandbox/workflows/Build/badge.svg)
 -----
 
 * [CCB API Docs](http://designccb.s3.amazonaws.com/helpdesk/files/official_docs/api.html)

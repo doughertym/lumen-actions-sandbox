@@ -1,4 +1,4 @@
-name: Laravel
+name: Build
 
 on: [push, pull_request]
 
@@ -15,27 +15,9 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       - name: Directory Permissions
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/sbin/phpunit
-
-  assemble:
-    name: Assemble
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
       - name: Build the Docker image
         run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s)
-
-  deploy-staging:
-    name: Assemble
-    runs-on: ubuntu-latest
-    needs: assemble
-    steps:
       - name: Deploy to Staging
         run: echo "Deploying to staging..."
