@@ -2,6 +2,11 @@ name: Build
 
 on: [push, pull_request]
 
+env:
+  IMAGE_NAME=lumen-actions-sandbox
+  GKE_PROJECT=threedev.com/api-project-479457777539
+  CONTAINER_REPO=gcr.io/$GKE_PROJECT
+
 jobs:
   build:
     name: Build
@@ -21,12 +26,10 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
       - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag lumen-actions-sandbox:$(date +%s) --tag gcr.io/threedev.com/api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
-      - run: docker image ls
+        run: docker build . --file docker/Dockerfile --tag $IMAGE_NAME:$(date +%s) --tag $CONTAINER_REPO/$IMAGE_NAME:$GITHUB_SHA
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          version: '296.0.0'
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_KEY }}
       # Configure docker to use the gcloud command-line tool as a credential helper
@@ -34,7 +37,6 @@ jobs:
           # Set up docker to authenticate
           # via gcloud command-line tool.
           gcloud auth configure-docker
-      - run: docker image ls
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push gcr.io/threedev.com/api-project-479457777539/lumen-actions-sandbox:$GITHUB_SHA
+        run: docker push $CONTAINER_REPO/$IMAGE_NAME:$GITHUB_SHA
