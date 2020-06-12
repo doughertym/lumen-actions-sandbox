@@ -26,7 +26,7 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
       - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":$(date +%s) --tag "$CONTAINER_REPO/$IMAGE_NAME:$GITHUB_SHA"
+        run: docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":$(date +%s) --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -39,4 +39,4 @@ jobs:
           gcloud auth configure-docker
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$CONTAINER_REPO/$IMAGE_NAME:$GITHUB_SHA"
+        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
