@@ -24,13 +24,6 @@ jobs:
         run: docker build . --file docker/Dockerfile --tag lumen-actions-sandbox:$(date +%s) --tag gcr.io/479457777539/lumen-actions-sandbox:$GITHUB_SHA
       - run: docker image ls
 
-  staging:
-    needs: build
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           version: '296.0.0'
