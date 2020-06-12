@@ -61,19 +61,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          php-version: '7.4'
-          tools: pecl
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_KEY }}
 
       # Deploy image to Cloud Run
-      - name: Deploy Staging
+      - name: Deploying to staging
         run: |
-          gcloud run deploy "$IMAGE_NAME" \
+          gcloud --project lithe-breaker-191614 run deploy "$IMAGE_NAME" \
             --region us-central1 \
             --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA" \
             --platform "managed" \
