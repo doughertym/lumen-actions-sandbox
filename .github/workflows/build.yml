@@ -8,6 +8,7 @@ on:
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
   CONTAINER_REPO: "gcr.io/lithe-breaker-191614"
+  IMAGE_TAG: $(git rev-parse --short HEAD)
 
 jobs:
   build:
@@ -39,8 +40,9 @@ jobs:
         run: vendor/bin/phpunit
       - name: Build the Docker image
         run: |
-          php artisan version >.version
-          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":$(date +%s) --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
+          php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
+          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$IMAGE_TAG" \
+            --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -53,7 +55,7 @@ jobs:
           gcloud auth configure-docker
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
+        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG"
 
   deploy-staging:
     name: Deploy to Staging
@@ -71,6 +73,6 @@ jobs:
         run: |
           gcloud --project lithe-breaker-191614 run deploy "$IMAGE_NAME" \
             --region us-central1 \
-            --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA" \
+            --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG" \
             --platform "managed" \
             --allow-unauthenticated
