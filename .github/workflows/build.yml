@@ -22,5 +22,22 @@ jobs:
         run: vendor/bin/phpunit
       - name: Build the Docker image
         run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s)
+
+  staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - needs: build
+      - uses: actions/checkout@v2
+        with:
+          php-version: '7.4'
+          tools: pecl
+      # Setup gcloud CLI
+#      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+#        with:
+#          version: '270.0.0'
+#          service_account_email: ${{ secrets.GKE_EMAIL }}
+#          service_account_key: ${{ secrets.GKE_KEY }}
       - name: Deploy to Staging
         run: echo "Deploying to staging..."
