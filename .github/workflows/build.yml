@@ -28,13 +28,11 @@ jobs:
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
-      - name: Create Short SHA
-        run: echo ::set-env name=IMAGE_TAG::$(git rev-parse --short HEAD)
       - name: Build the Docker image
         run: |
           php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
           docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$IMAGE_TAG" \
-            --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG"
+            --tag "$CONTAINER_REPO"/"$IMAGE_NAME":${{ github.run_number }}
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -47,7 +45,7 @@ jobs:
           gcloud auth configure-docker
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG"
+        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":${{ github.run_number }}
 
   deploy-staging:
     name: Deploy to Staging
@@ -59,14 +57,11 @@ jobs:
         with:
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_KEY }}
-
-      - name: Create Short SHA
-        run: echo ::set-env name=IMAGE_TAG::$(git rev-parse --short HEAD)
       # Deploy image to Cloud Run
       - name: Deploying to staging
         run: |
           gcloud --project lithe-breaker-191614 run deploy "$IMAGE_NAME" \
             --region us-central1 \
-            --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$IMAGE_TAG" \
+            --image "$CONTAINER_REPO"/"$IMAGE_NAME":${{ github.run_number }} \
             --platform "managed" \
             --allow-unauthenticated
