@@ -24,11 +24,11 @@ jobs:
         run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s)
 
   staging:
+    needs: build
     name: Deploy to Staging
     runs-on: ubuntu-latest
 
     steps:
-      - needs: build
       - uses: actions/checkout@v2
         with:
           php-version: '7.4'
