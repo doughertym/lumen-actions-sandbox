@@ -16,6 +16,8 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix'=>'api/v1'], function() use($router){
+    $router->get('/status', 'StatusController@index');
+
     $router->get('/church/{church_id}/people', 'PeopleController@index');
     $router->get('/church/{church_id}/people/{person_id}', 'PeopleController@show');
 
