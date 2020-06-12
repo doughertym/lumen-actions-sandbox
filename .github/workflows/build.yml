@@ -19,7 +19,7 @@ jobs:
       - name: Directory Permissions
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
       - name: Execute tests (Unit and Feature tests) via PHPUnit
-        run: vendor/sbin/phpunit
+        run: vendor/bin/phpunit
       - name: Build the Docker image
         run: docker build . --file docker/Dockerfile --tag groupvitals-ccb:$(date +%s)
       - name: Deploy to Staging
