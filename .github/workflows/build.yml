@@ -8,7 +8,6 @@ on:
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
   CONTAINER_REPO: "gcr.io/lithe-breaker-191614"
-#  IMAGE_TAG: "$(git rev-parse --short HEAD)"
 
 jobs:
   build:
@@ -31,7 +30,7 @@ jobs:
       - name: Build the Docker image
         run: |
           php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
-          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$IMAGE_TAG" \
+          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
