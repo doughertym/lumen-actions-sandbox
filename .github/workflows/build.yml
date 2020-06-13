@@ -1,6 +1,9 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - production
 
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
@@ -16,16 +19,6 @@ jobs:
         with:
           php-version: '7.4'
           tools: pecl
-      - name: Environment
-        run: |
-          echo github.event: ${{ github.event }}
-          echo github.run_number: ${{ github.run_number }}
-          echo github.actor: ${{ github.actor }}
-          echo github.event_name: ${{ github.event_name }}
-          echo github.sha: ${{ github.sha }}
-          echo github.ref: ${{ github.ref }}
-          echo github.head_ref: ${{ github.head_ref }}
-          echo github.base_ref: ${{ github.base_ref }}
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
@@ -36,8 +29,9 @@ jobs:
         run: vendor/bin/phpunit
       - name: Build the Docker image
         run: |
-          php artisan version >.version
-          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":$(date +%s) --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
+          php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
+          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
+            --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -50,14 +44,23 @@ jobs:
           gcloud auth configure-docker
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_SHA"
+        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_KEY }}
       # Deploy image to Cloud Run
-#      - name: Deploy Staging
-#        run: |-
-#          gcloud run deploy "$SERVICE_NAME" \
-#            --quiet \
-#            --region "$RUN_REGION" \
-#            --image "gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA" \
-#            --platform "managed" \
-#            --allow-unauthenticated
+      - name: Deploying to staging
+        run: |
+          gcloud --project lithe-breaker-191614 run deploy "$IMAGE_NAME" \
+            --region us-central1 \
+            --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
+            --platform "managed" \
+            --allow-unauthenticated
