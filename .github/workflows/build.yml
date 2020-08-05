@@ -66,11 +66,14 @@ jobs:
     name: Deploy to GCP Cloud Run
     needs: build
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: "staging"
 
     steps:
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
         run: |
+          echo "::set-env name=APP_ENV::production"
           echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -79,7 +82,7 @@ jobs:
           service_account_key: ${{ env.GCP_KEY }}
 
       # Deploy image to Cloud Run
-      - name: Deploying to staging
+      - name: Deploying to "$APP_ENV"
         run: |
           gcloud --project "$GCP_PROJECT" run deploy "$IMAGE_NAME" \
             --region "$GCP_REGION" \
