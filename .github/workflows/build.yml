@@ -82,7 +82,7 @@ jobs:
           service_account_key: ${{ env.GCP_KEY }}
 
       # Deploy image to Cloud Run
-      - name: Deploying to "$APP_ENV"
+      - name: Deploying to ${{ env.APP_ENV }}
         run: |
           gcloud --project "$GCP_PROJECT" run deploy "$IMAGE_NAME" \
             --region "$GCP_REGION" \
