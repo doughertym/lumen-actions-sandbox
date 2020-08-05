@@ -51,18 +51,16 @@ jobs:
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ env.GCP_EMAIL }}
           service_account_key: ${{ env.GCP_KEY }}
       # Configure docker to use the gcloud command-line tool as a credential helper
       - run: |
           # Set up docker to authenticate
           # via gcloud command-line tool.
-          gcloud auth configure-docker --account "$GCP_EMAIL"
+          gcloud auth configure-docker
 
       # Push the Docker image to Google Container Registry
       - name: Publish
         run: |
-          gcloud config set account "$GCP_EMAIL"
           docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
   deploy:
@@ -81,13 +79,12 @@ jobs:
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ env.GCP_EMAIL }}
           service_account_key: ${{ env.GCP_KEY }}
 
       # Deploy image to Cloud Run
       - name: Deploying
         run: |
-          gcloud  --account "$GCP_EMAIL" --project "$GCP_PROJECT" \
+          gcloud --project "$GCP_PROJECT" \
             run deploy "$IMAGE_NAME" --region "$GCP_REGION" \
             --image "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --platform "managed" --port=80 \
