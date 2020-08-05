@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - random-branch-001
   pull_request:
     branches:
       - master
