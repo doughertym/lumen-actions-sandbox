@@ -14,7 +14,8 @@ env:
   GCP_PROJECT: "lithe-breaker-191614"
   GCP_REGION: "us-central1"
   REPO_ROOT: "gcr.io"
-  MY_VARIABLE: "default-value"
+  GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
+  GCP_KEY: ${{ secrets.GCP_KEY }}
 
 jobs:
   build:
@@ -49,8 +50,8 @@ jobs:
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ secrets.GCP_EMAIL }}
-          service_account_key: ${{ secrets.GCP_KEY }}
+          service_account_email: ${{ env.GCP_EMAIL }}
+          service_account_key: ${{ env.GCP_KEY }}
       # Configure docker to use the gcloud command-line tool as a credential helper
       - run: |
           # Set up docker to authenticate
@@ -68,8 +69,8 @@ jobs:
     steps:
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ secrets.GCP_EMAIL }}
-          service_account_key: ${{ secrets.GCP_KEY }}
+          service_account_email: ${{ env.GCP_EMAIL }}
+          service_account_key: ${{ env.GCP_KEY }}
 
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
