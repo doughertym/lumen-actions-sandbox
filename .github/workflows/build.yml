@@ -10,7 +10,9 @@ on:
 
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
-  CONTAINER_REPO: "gcr.io/lithe-breaker-191614"
+  GCP_PROJECT: "lithe-breaker-191614"
+  GCP_REGION: "us-central1"
+  REPO_ROOT: "gcr.io"
   MY_VARIABLE: "default-value"
 
 jobs:
@@ -40,8 +42,9 @@ jobs:
       - name: Build the Docker image
         run: |
           php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
-          docker build . --file docker/Dockerfile --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
-            --tag "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
+          docker build . --file docker/Dockerfile \
+            --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
+            --tag "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
@@ -54,10 +57,10 @@ jobs:
           gcloud auth configure-docker
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
+        run: docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
-  deploy-staging:
-    name: Deploy to Staging
+  deploy:
+    name: Deploy to GCP Cloud Run
     needs: build
     runs-on: ubuntu-latest
 
@@ -75,8 +78,8 @@ jobs:
       # Deploy image to Cloud Run
       - name: Deploying to staging
         run: |
-          gcloud --project lithe-breaker-191614 run deploy "$IMAGE_NAME" \
-            --region us-central1 \
-            --image "$CONTAINER_REPO"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
-            --platform "managed" \
+          gcloud --project "$GCP_PROJECT" run deploy "$IMAGE_NAME" \
+            --region "$GCP_REGION" \
+            --image "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
+            --platform "managed" --port=80 \
             --allow-unauthenticated
