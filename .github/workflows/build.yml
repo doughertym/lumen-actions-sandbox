@@ -31,6 +31,12 @@ jobs:
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
+
+      - name: Set production values
+        if: contains(github.ref, 'production') || contains(github.ref, 'master')
+        run: |
+          echo "::set-env name=IMAGE_NAME::lumen-actions"
+
       - name: Build the Docker image
         run: |
           php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
@@ -60,6 +66,12 @@ jobs:
         with:
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_KEY }}
+
+      - name: Set production values
+        if: contains(github.ref, 'production') || contains(github.ref, 'master')
+        run: |
+          echo "::set-env name=IMAGE_NAME::lumen-actions"
+
       # Deploy image to Cloud Run
       - name: Deploying to staging
         run: |
