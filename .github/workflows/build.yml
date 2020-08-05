@@ -10,6 +10,7 @@ on:
 
 env:
   IMAGE_NAME: "lumen-actions-sandbox"
+  IMAGE_NAME_PRODUCTION: "lumen-actions"
   GCP_PROJECT: "lithe-breaker-191614"
   GCP_REGION: "us-central1"
   REPO_ROOT: "gcr.io"
@@ -37,7 +38,7 @@ jobs:
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
         run: |
-          echo "::set-env name=IMAGE_NAME::lumen-actions"
+          echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
 
       - name: Build the Docker image
         run: |
@@ -73,7 +74,7 @@ jobs:
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
         run: |
-          echo "::set-env name=IMAGE_NAME::lumen-actions"
+          echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
 
       # Deploy image to Cloud Run
       - name: Deploying to staging
