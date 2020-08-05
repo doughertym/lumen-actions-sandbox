@@ -37,8 +37,8 @@ jobs:
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
 
-      - name: Set production values
-        if: contains(github.ref, 'production') || contains(github.ref, 'master')
+      - name: Set production environment
+        if: contains(github.ref, 'production')
         run: |
           echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
 
@@ -61,7 +61,9 @@ jobs:
 
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
+        run: |
+          gcloud config set account "$GCP_EMAIL"
+          docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
   deploy:
     name: Deploy to GCP Cloud Run
@@ -85,8 +87,8 @@ jobs:
       # Deploy image to Cloud Run
       - name: Deploying
         run: |
-          gcloud --project "$GCP_PROJECT" run deploy "$IMAGE_NAME" \
-            --region "$GCP_REGION" \
+          gcloud  --account "$GCP_EMAIL" --project "$GCP_PROJECT" \
+            run deploy "$IMAGE_NAME" --region "$GCP_REGION" \
             --image "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --platform "managed" --port=80 \
             --allow-unauthenticated
