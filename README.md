@@ -35,3 +35,4 @@ These instructions are for PhpStorm, so if you're using a different IDE steps ma
 3. Set the IDE Session Key to `PHPSTORM`
 
 
+Update #2
