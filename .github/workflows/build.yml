@@ -24,15 +24,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          php-version: '7.4'
-          tools: pecl
+
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
       - name: Install Dependencies
         run: composer install --no-interaction --no-scripts --no-progress --prefer-dist
+
       - name: Directory Permissions
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
+
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         run: vendor/bin/phpunit
 
@@ -67,15 +68,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          service_account_email: ${{ env.GCP_EMAIL }}
-          service_account_key: ${{ env.GCP_KEY }}
-
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
         run: |
           echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
+
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_email: ${{ env.GCP_EMAIL }}
+          service_account_key: ${{ env.GCP_KEY }}
 
       # Deploy image to Cloud Run
       - name: Deploying to staging
