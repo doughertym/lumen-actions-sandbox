@@ -14,8 +14,7 @@ env:
   GCP_PROJECT: "lithe-breaker-191614"
   GCP_REGION: "us-central1"
   REPO_ROOT: "gcr.io"
-  GCP_EMAIL: ${{ secrets.GCP_EMAIL }}
-  GCP_KEY: ${{ secrets.GCP_KEY }}
+  MY_VARIABLE: "default-value"
 
 jobs:
   build:
@@ -43,23 +42,24 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          php artisan version ${{ github.run_number }} ${{ github.head_ref }} >.version
+          php artisan version ${{ github.run_number }} ${{ github.head_ref }} >storage/version.env
           docker build . --file docker/Dockerfile \
             --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --tag "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ env.GCP_EMAIL }}
-          service_account_key: ${{ env.GCP_KEY }}
+          service_account_key: ${{ secrets.GCP_KEY }}
       # Configure docker to use the gcloud command-line tool as a credential helper
       - run: |
           # Set up docker to authenticate
           # via gcloud command-line tool.
           gcloud auth configure-docker
+
       # Push the Docker image to Google Container Registry
       - name: Publish
-        run: docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
+        run: |
+          docker push "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
   deploy:
     name: Deploy to GCP Cloud Run
@@ -67,10 +67,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set production environment
+        if: contains(github.ref, 'production')
+        run: |
+          echo "::set-env name=GCP_PROJECT::$GCP_PROJECT_PRODUCTION"
+
       - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          service_account_email: ${{ env.GCP_EMAIL }}
-          service_account_key: ${{ env.GCP_KEY }}
+          service_account_key: ${{ secrets.GCP_KEY }}
 
       - name: Set production values
         if: contains(github.ref, 'production') || contains(github.ref, 'master')
