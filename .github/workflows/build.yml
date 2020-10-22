@@ -40,9 +40,12 @@ jobs:
         run: |
           echo "::set-env name=IMAGE_NAME::$IMAGE_NAME_PRODUCTION"
 
+      - name: Create version.json
+        run: |
+          php artisan deploy:version ${{ github.run_number }} ${{ github.head_ref }} >storage/versions.json
+
       - name: Build the Docker image
         run: |
-          php artisan version ${{ github.run_number }} ${{ github.head_ref }} >storage/version.env
           docker build . --file docker/Dockerfile \
             --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --tag "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
