@@ -23,13 +23,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          php-version: '7.4'
-          tools: pecl
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
-        run: composer install --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install --no-interaction --no-scripts --no-progress --prefer-dist --classmap-authoritative
       - name: Directory Permissions
         run: mkdir -p storage bootstrap/cache && chmod -R 777 storage bootstrap/cache
       - name: Execute tests (Unit and Feature tests) via PHPUnit
