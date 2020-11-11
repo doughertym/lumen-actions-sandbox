@@ -3,6 +3,9 @@
 ![Build](https://github.com/doughertym/lumen-actions-sandbox/workflows/Build/badge.svg)
 -----
 
+## Contents
+
+* [Code Coverage Report](coverage/html/index.html)
 
 ## Laravel Lumen
 
@@ -15,6 +18,7 @@ Start the local development server with Docker Compose:
 ```
 docker-compose -f docker/docker-compose.yml up 
 ``` 
+
 
 Include the optional `--build` flag to rebuild the container.  
  
