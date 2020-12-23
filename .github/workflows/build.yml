@@ -50,7 +50,7 @@ jobs:
             --tag "$IMAGE_NAME":"$GITHUB_RUN_NUMBER" \
             --tag "$REPO_ROOT"/"$GCP_PROJECT"/"$IMAGE_NAME":"$GITHUB_RUN_NUMBER"
 
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GCP_KEY }}
       # Configure docker to use the gcloud command-line tool as a credential helper
@@ -75,7 +75,7 @@ jobs:
         run: |
           echo "::set-env name=GCP_PROJECT::$GCP_PROJECT_PRODUCTION"
 
-      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - uses: google-github-actions/setup-gcloud@master
         with:
           service_account_key: ${{ secrets.GCP_KEY }}
 
