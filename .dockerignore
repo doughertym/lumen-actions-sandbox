@@ -9,6 +9,7 @@ README.md
 .phpunit.result.cache
 .styleci.yml
 /docker/
+!docker/php-fpm.d/www.conf
 
 phpunit.xml
 /tests/
