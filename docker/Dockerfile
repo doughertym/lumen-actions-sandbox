@@ -1,11 +1,58 @@
-FROM php:7.4-cli
+FROM php:7.4.3-fpm-alpine
 
-COPY . /usr/local/gv-ccb
-WORKDIR /usr/local/gv-ccb
+LABEL mantainer="miked@threedev.io"
+LABEL description="Lumen Microservice GCP Run container"
 
-RUN pecl install xdebug && \
-    docker-php-ext-install pdo pdo_mysql && \
-    docker-php-ext-enable xdebug pdo pdo_mysql
+ENV build_deps \
+        autoconf \
+        libzip-dev \
+        curl-dev \
+        oniguruma-dev
 
-EXPOSE 80 9000
-CMD [ "php", "-S", "0.0.0.0:80", "-t", "public" ]
+ENV persistent_deps \
+        build-base \
+        git \
+        unzip \
+        curl \
+        g++ \
+        gcc \
+        make \
+        mysql-client \
+        php-xml \
+        php-zip \
+        rsync \
+        nginx
+
+WORKDIR /var/www
+COPY . /var/www
+COPY docker/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+RUN chown -R www-data:www-data ./* \
+    && chown -R www-data:www-data ./.* \
+    && find . -type f -exec chmod 644 {} \; \
+    && find . -type d -exec chmod 775 {} \;
+
+# Install build dependencies
+RUN apk upgrade && apk update && \
+    apk add --no-cache --virtual .build-dependencies $build_deps
+
+# Install persistent dependencies
+RUN apk add --update --no-cache --virtual .persistent-dependencies $persistent_deps \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN apk update \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install mysqli \
+        pdo \
+        pdo_mysql \
+        bcmath \
+        curl \
+        pcntl \
+        zip \
+        exif \
+    && apk del -f .build-dependencies
+
+USER www-data
+EXPOSE 9000
+CMD ["php-fpm", "--nodaemonize"]
+
