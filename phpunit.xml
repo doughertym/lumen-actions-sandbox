@@ -18,9 +18,16 @@
             <directory suffix=".php">./app</directory>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-html" target="docs/coverage/html" lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="docs/coverage/clover.xml"/>
+        <log type="coverage-php" target="docs/coverage/coverage.php"/>
+        <log type="coverage-text" target="docs/coverage/coverage.txt" showUncoveredFiles="false"/>
+    </logging>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="LOG_CHANNEL" value="google"/>
     </php>
 </phpunit>

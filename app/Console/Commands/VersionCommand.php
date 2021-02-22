@@ -10,14 +10,14 @@ class VersionCommand  extends Command
      *
      * @var string
      */
-    protected $signature = 'version {run_number?} {ref?}';
+    protected $signature = 'deploy:version {run_number?} {ref?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Read and print a .Net Approvals file';
+    protected $description = 'Create a versions file';
 
     /**
      * Create a new command instance.
@@ -47,10 +47,19 @@ class VersionCommand  extends Command
         );
 
         $hash = exec("git rev-parse --short HEAD");
-        $this->info("MAJOR = 1");
-        $this->info("MINOR = 0");
-        $this->info("PATCH = $run_number");
-        $this->info("SHORT_HASH = $hash");
-        $this->info("BRANCH = " . $branch);
+        $date = exec("git show -s --format=%ci {$hash}");
+
+        $versions = [
+            'groupvitals-ccb' => [
+                'major' => 1,
+                'minor' => 0,
+                'patch' => $run_number,
+                'branch' => $branch,
+                'hash' => $hash,
+                'date' => $date
+            ],
+            'lumen' => 'v6.3.5'
+        ];
+        echo json_encode($versions, JSON_PRETTY_PRINT);
     }
 }
