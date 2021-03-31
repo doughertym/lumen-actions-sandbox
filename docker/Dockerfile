@@ -23,9 +23,11 @@ ENV persistent_deps \
         rsync \
         nginx
 
-WORKDIR /var/www
-COPY . /var/www
-COPY docker/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf
+WORKDIR /usr/local/gv-ccb
+COPY . /usr/local/gv-ccb
+
+#COPY nginx/nginx.conf /etc/nginx/nginx.conf
+#COPY nginx/ccb-api.conf /etc/nginx/conf.d/default.conf
 
 RUN chown -R www-data:www-data ./* \
     && chown -R www-data:www-data ./.* \
@@ -52,7 +54,9 @@ RUN apk update \
         exif \
     && apk del -f .build-dependencies
 
+RUN  rc-update add nginx && rc-service nginx start
+
 USER www-data
 EXPOSE 9000
-CMD ["php-fpm", "--nodaemonize"]
+CMD ["php-fpm"]
 

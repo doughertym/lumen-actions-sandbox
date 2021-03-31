@@ -18,10 +18,19 @@ GCP Scheduler -> ccb.groupvitals.com/api/v1/ ->
 Start the local development server with Docker Compose:
  
 ```
-docker-compose -f docker/docker-compose.yml up 
-``` 
+docker-compose -f docker/docker-compose.yml up
+ 
+```
 
-Include the optional `--build` flag to rebuild the container.  
+Include the optional `--build` flag to rebuild the container.
+
+```
+docker-compose -f docker/docker-compose.yml up --build
+```
+
+```
+docker-compose -f docker/docker-compose.yml run -u root app sh
+```
  
 ### Setting up Xdebug
 
