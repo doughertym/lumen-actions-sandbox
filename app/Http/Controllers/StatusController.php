@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class StatusController extends Controller
 {
-    private $logger;
     /**
      * StatusController constructor.
      */
@@ -38,7 +38,7 @@ class StatusController extends Controller
                 $lumen_version = $versions_json->lumen;
             }
         } catch (\Exception $exception) {
-            $this->logger->error("Could not load version.json: {$exception->getMessage()}");
+            Log::error("Could not load version.json: {$exception->getMessage()}");
             $version = "unknown";
         }
         $status = [
