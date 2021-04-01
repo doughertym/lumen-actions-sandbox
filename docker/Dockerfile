@@ -26,8 +26,7 @@ ENV persistent_deps \
 WORKDIR /usr/local/gv-ccb
 COPY . /usr/local/gv-ccb
 
-#COPY nginx/nginx.conf /etc/nginx/nginx.conf
-#COPY nginx/ccb-api.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 RUN chown -R www-data:www-data ./* \
     && chown -R www-data:www-data ./.* \
@@ -54,9 +53,15 @@ RUN apk update \
         exif \
     && apk del -f .build-dependencies
 
-RUN  rc-update add nginx && rc-service nginx start
+RUN mkdir /run/nginx/
 
-USER www-data
-EXPOSE 9000
-CMD ["php-fpm"]
+USER root
+
+EXPOSE 80
+
+COPY docker/startup.sh /startup.sh
+
+STOPSIGNAL SIGQUIT
+
+CMD ["sh", "/startup.sh"]
 
